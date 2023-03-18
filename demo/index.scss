@@ -106,5 +106,17 @@ body {
         }
       }
     }
+
+    &.isDragging {
+      opacity: 0.5;
+    }
+
+    &.isDragOver {
+      background-color: #00000033;
+
+      @media (prefers-color-scheme: dark) {
+        background-color: #ffffff33;
+      }
+    }
   }
 }

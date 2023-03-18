@@ -38,10 +38,13 @@ export default function App() {
 
   const nodeRenderer = useCallback(
     (key: React.Key, props: TreeViewNodeProps<TreeNode>) => {
-      function handleNodeMove(source: TreeNode, target: TreeNode) {
-        if (isAncestor(source, target)) {
-          return;
+      function handleCanDrop(source: TreeNode, target: TreeNode) {
+        if (source.id === target.id || isAncestor(source, target)) {
+          return false;
         }
+        return true;
+      }
+      function handleNodeMove(source: TreeNode, target: TreeNode) {
         if (source.parent) {
           const siblings = childNodes.get(source.parent.id);
           if (siblings) {
@@ -66,7 +69,9 @@ export default function App() {
           }
         });
       }
-      return <DnDTreeNode key={key} onNodeMove={handleNodeMove} {...props} />;
+      return (
+        <DnDTreeNode key={key} onCanDrop={handleCanDrop} onNodeMove={handleNodeMove} {...props} />
+      );
     },
     [childNodes]
   );

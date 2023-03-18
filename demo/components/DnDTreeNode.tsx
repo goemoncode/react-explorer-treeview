@@ -2,12 +2,14 @@ import { TreeViewNodeProps } from '../../src';
 import { TreeViewNode } from '../../src/TreeViewNode';
 import { useDrag, useDrop } from 'react-dnd';
 import { useRef } from 'react';
+import clsx from 'clsx';
 
 export interface DnDTreeNodeProps<T> extends TreeViewNodeProps<T> {
+  onCanDrop?: (source: T, target: T) => boolean;
   onNodeMove: (source: T, target: T) => void;
 }
 
-export function DnDTreeNode<T>({ onNodeMove, node, ...props }: DnDTreeNodeProps<T>) {
+export function DnDTreeNode<T>({ onCanDrop, onNodeMove, node, ...props }: DnDTreeNodeProps<T>) {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag({
     type: 'DnDTreeNode',
@@ -16,15 +18,20 @@ export function DnDTreeNode<T>({ onNodeMove, node, ...props }: DnDTreeNodeProps<
       isDragging: monitor.isDragging(),
     }),
   });
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'DnDTreeNode',
     drop(source: T) {
       onNodeMove(source, node);
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
+    canDrop(source, monitor) {
+      return onCanDrop?.(source, node) ?? monitor.canDrop();
+    },
+    collect: (monitor) => {
+      return {
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      };
+    },
   });
 
   drag(drop(ref));
@@ -32,10 +39,10 @@ export function DnDTreeNode<T>({ onNodeMove, node, ...props }: DnDTreeNodeProps<
   return (
     <TreeViewNode
       ref={ref}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        backgroundColor: isOver ? '#ffffff33' : undefined,
-      }}
+      className={clsx({
+        isDragging,
+        isDragOver: isOver && canDrop,
+      })}
       node={node}
       {...props}
     />
