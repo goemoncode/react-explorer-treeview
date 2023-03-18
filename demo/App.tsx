@@ -97,7 +97,7 @@ export default function App() {
         </fieldset>
         <div className="link">
           <a
-            href="https://github.com/goemoncode/react-explorer-listview"
+            href="https://github.com/goemoncode/react-explorer-treeview"
             target="_blank"
             rel="noreferrer"
           >
