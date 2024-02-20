@@ -67,7 +67,7 @@ function TreeView<T, K extends React.Key>(
   const [refs1, refs2, viewportRows, rowsPerPage] = useViewportRows(
     ref,
     refContainer,
-    rows,
+    rows.length,
     selectedNode !== undefined ? findIndex(selectedNode) : -1
   );
 
